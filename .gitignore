@@ -1,0 +1,34 @@
+# ─── Зависимости (генерируются заново) ───
+node_modules/
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# ─── Сборка ───
+dist/
+dist-electron/
+build/
+*.spec
+
+# ─── Личные данные пользователя (не должны попадать в репозиторий) ───
+vdl.db
+settings.json
+
+# ─── Электрон / системное ───
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+
+# ─── IDE ───
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# ─── Локальные переменные окружения ───
+.env
+.env.local
