@@ -145,6 +145,10 @@ npm run dev
 ```
 
 Python-бэкенд запускается автоматически вместе с приложением.
+## Authors / Авторы
+
+- [@wonderMoronWins](https://github.com/wonderMoronWins) — author / автор
+- [@urpok268](https://github.com/urpok268) — contributor / участник
 
 ### Лицензия
 
