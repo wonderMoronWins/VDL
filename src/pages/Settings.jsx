@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { getSettings, saveSettings, checkUpdates, updateYtdlp } from '../api.js'
+import { getSettings, saveSettings } from '../api.js'
 import { LANGUAGES } from '../i18n/languages.js'
 
 export default function Settings() {
@@ -8,10 +8,6 @@ export default function Settings() {
   const [cfg,         setCfg]         = useState(null)
   const [loading,     setLoading]     = useState(true)
   const [saved,       setSaved]       = useState(false)
-  const [updateInfo,  setUpdateInfo]  = useState(null)
-  const [checking,    setChecking]    = useState(false)
-  const [updating,    setUpdating]    = useState(false)
-  const [updateMsg,   setUpdateMsg]   = useState('')
 
   useEffect(() => {
     getSettings().then(data => { setCfg(data); setLoading(false) })
@@ -31,35 +27,6 @@ export default function Settings() {
   function handleChangeLang(code) {
     try { localStorage.setItem('vdl_lang', code) } catch {}
     i18n.changeLanguage(code)
-  }
-
-  async function handleCheckUpdates() {
-    setChecking(true); setUpdateMsg(''); setUpdateInfo(null)
-    try {
-      const info = await checkUpdates()
-      setUpdateInfo(info)
-    } catch (e) {
-      setUpdateMsg(t('common.error') + ': ' + e.message)
-    } finally {
-      setChecking(false)
-    }
-  }
-
-  async function handleUpdate() {
-    setUpdating(true); setUpdateMsg('')
-    try {
-      const res = await updateYtdlp()
-      if (res.success) {
-        setUpdateMsg(`✓ ${res.new_version}`)
-        setUpdateInfo(prev => ({ ...prev, installed_version: res.new_version, update_available: false }))
-      } else {
-        setUpdateMsg(t('common.error') + ': ' + res.error)
-      }
-    } catch (e) {
-      setUpdateMsg(t('common.error') + ': ' + e.message)
-    } finally {
-      setUpdating(false)
-    }
   }
 
   async function handleSelectFolder() {
@@ -123,94 +90,6 @@ export default function Settings() {
         <SettingRow label={t('settings.notifications')} icon="ti-bell">
           <Toggle value={cfg.notifications} onChange={v => set('notifications', v)} />
         </SettingRow>
-        <SettingRow label={t('settings.autoUpdate')} icon="ti-refresh">
-          <Toggle value={cfg.auto_check_updates} onChange={v => set('auto_check_updates', v)} />
-        </SettingRow>
-      </Section>
-
-      {/* Обновления yt-dlp */}
-      <Section label={t('settings.updatesSection')}>
-        <div className="bg-bg-primary rounded-lg p-4 border border-white/[0.07]">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <div className="text-white/85 text-[13.5px] font-medium mb-0.5 flex items-center gap-2">
-                <i className="ti ti-brand-python text-accent-light text-[16px]" aria-hidden="true" />
-                yt-dlp
-              </div>
-              <div className="text-text-muted text-[12px]">
-                {t('settings.installed')}:{' '}
-                <span className="text-white/60 font-mono">{updateInfo?.installed_version || '—'}</span>
-              </div>
-              {updateInfo?.latest_version && (
-                <div className="text-text-muted text-[12px]">
-                  {t('settings.latest')}:{' '}
-                  <span className={`font-mono ${updateInfo.update_available ? 'text-accent-light' : 'text-success'}`}>
-                    {updateInfo.latest_version}
-                  </span>
-                  {updateInfo.published_at && <span className="text-text-muted ml-1">({updateInfo.published_at})</span>}
-                </div>
-              )}
-            </div>
-            <button
-              onClick={handleCheckUpdates}
-              disabled={checking || updating}
-              className="flex items-center gap-1.5 text-[12.5px] border border-white/10 text-text-secondary rounded-lg px-3.5 py-2 hover:border-accent/40 hover:text-accent-light transition-colors disabled:opacity-50"
-            >
-              <i className={`ti ti-refresh text-[14px] ${checking ? 'spin' : ''}`} aria-hidden="true" />
-              {checking ? t('settings.checking') : t('settings.checkUpdates')}
-            </button>
-          </div>
-
-          {updateInfo && (
-            <div className={`rounded-lg px-4 py-3 flex items-center justify-between ${
-              updateInfo.update_available
-                ? 'bg-accent/10 border border-accent/25'
-                : updateInfo.error
-                ? 'bg-danger/10 border border-danger/25'
-                : 'bg-success/10 border border-success/25'
-            }`}>
-              {updateInfo.error ? (
-                <span className="text-danger text-[13px] flex items-center gap-2">
-                  <i className="ti ti-alert-circle" aria-hidden="true" /> {updateInfo.error}
-                </span>
-              ) : updateInfo.update_available ? (
-                <>
-                  <div>
-                    <div className="text-accent-light text-[13px] font-medium flex items-center gap-1.5">
-                      <i className="ti ti-arrow-up-circle" aria-hidden="true" />
-                      {t('settings.updateAvailable', { version: updateInfo.latest_version })}
-                    </div>
-                    <div className="text-text-muted text-[11.5px] mt-0.5">{t('settings.updateDesc')}</div>
-                  </div>
-                  <button
-                    onClick={handleUpdate}
-                    disabled={updating}
-                    className="flex items-center gap-1.5 bg-gradient-to-r from-accent to-accent-light text-white rounded-lg px-4 py-2 text-[13px] font-medium hover:opacity-90 disabled:opacity-50 transition-opacity flex-shrink-0 ml-3"
-                  >
-                    {updating
-                      ? <><i className="ti ti-loader-2 spin text-[14px]" aria-hidden="true" /> {t('settings.updating')}</>
-                      : <><i className="ti ti-download text-[14px]" aria-hidden="true" /> {t('settings.update')}</>}
-                  </button>
-                </>
-              ) : (
-                <span className="text-success text-[13px] flex items-center gap-2">
-                  <i className="ti ti-circle-check" aria-hidden="true" />
-                  {t('settings.upToDate')}
-                </span>
-              )}
-            </div>
-          )}
-
-          {updateMsg && (
-            <div className={`mt-3 text-[12.5px] flex items-center gap-1.5 ${
-              updateMsg.startsWith('✓') ? 'text-success' : 'text-danger'
-            }`}>
-              {updateMsg}
-            </div>
-          )}
-
-          <p className="text-text-muted text-[11.5px] mt-3 leading-relaxed">{t('settings.updateNote')}</p>
-        </div>
       </Section>
 
       {/* О приложении */}

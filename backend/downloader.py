@@ -8,6 +8,9 @@ import sys
 import certifi
 import yt_dlp
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from paths import get_ffmpeg
+
 # Указываем Python/yt-dlp путь к корневым сертификатам из certifi.
 # Без этого на Windows скачивание с VK, Dzen и др. падает с ошибкой
 # [SSL: CERTIFICATE_VERIFY_FAILED] — у системного Python нет CA bundle.
@@ -116,6 +119,7 @@ def download_video(
         'quiet':            True,
         'no_warnings':      True,
         'nocheckcertificate': True,
+        'ffmpeg_location':  get_ffmpeg(),
         'merge_output_format': fmt.lower() if fmt.lower() not in ('mp3','aac','flac','wav','ogg') else None,
     }
 

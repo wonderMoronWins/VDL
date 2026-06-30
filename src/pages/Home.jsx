@@ -162,10 +162,10 @@ export default function Home() {
 
             <div className="flex gap-2 mb-3">
               <ModeBtn active={!isAudio} onClick={() => { setIsAudio(false); setFormat('MP4') }}>
-                <i className="ti ti-video text-[14px]" aria-hidden="true" /> Видео
+                <i className="ti ti-video text-[14px]" aria-hidden="true" /> {t('home.video')}
               </ModeBtn>
               <ModeBtn active={isAudio} onClick={() => { setIsAudio(true); setFormat('MP3') }}>
-                <i className="ti ti-music text-[14px]" aria-hidden="true" /> Аудио
+                <i className="ti ti-music text-[14px]" aria-hidden="true" /> {t('home.audio')}
               </ModeBtn>
             </div>
 
@@ -201,30 +201,30 @@ export default function Home() {
       {/* БОЛЬШАЯ карточка активной загрузки — крупное превью + прогресс */}
       {activeDownloads.length > 0 && (
         <div className="mb-6">
-          {activeDownloads.map(t => (
-            <div key={t.id} className="bg-bg-card border border-accent/30 rounded-lg overflow-hidden mb-3 fade-in">
+          {activeDownloads.map(dl => (
+            <div key={dl.id} className="bg-bg-card border border-accent/30 rounded-lg overflow-hidden mb-3 fade-in">
               <div className="relative w-full h-[220px] bg-black/40">
-                {t.thumbnail
-                  ? <img src={t.thumbnail} alt="" className="w-full h-full object-cover opacity-90" />
+                {dl.thumbnail
+                  ? <img src={dl.thumbnail} alt="" className="w-full h-full object-cover opacity-90" />
                   : <div className="w-full h-full bg-gradient-to-br from-accent/30 to-accent-light/20" />}
                 {/* Затемнение снизу для читаемости */}
                 <div className="absolute inset-0 bg-gradient-to-t from-bg-card via-transparent to-transparent" />
                 {/* Большой процент по центру */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="text-white text-[42px] font-medium drop-shadow-lg">{Math.round(t.percent)}%</div>
+                  <div className="text-white text-[42px] font-medium drop-shadow-lg">{Math.round(dl.percent)}%</div>
                   <div className="text-white/70 text-[13px] flex items-center gap-1.5 mt-1">
-                    <i className="ti ti-loader-2 spin" aria-hidden="true" /> Скачивание...
+                    <i className="ti ti-loader-2 spin" aria-hidden="true" /> {t('home.downloading')}
                   </div>
                 </div>
               </div>
               <div className="p-4">
-                <div className="text-white text-[15px] font-medium mb-1 truncate">{t.title}</div>
+                <div className="text-white text-[15px] font-medium mb-1 truncate">{dl.title}</div>
                 <div className="text-text-muted text-[12px] mb-3">
-                  {t.platform} · {t.quality} {t.format}
-                  {t.speed && ` · ${t.speed}`}
-                  {t.eta && ` · осталось ${t.eta}`}
+                  {dl.platform} · {dl.quality} {dl.format}
+                  {dl.speed && ` · ${dl.speed}`}
+                  {dl.eta && ` · ${dl.eta}`}
                 </div>
-                <ProgressBar percent={t.percent} />
+                <ProgressBar percent={dl.percent} />
               </div>
             </div>
           ))}
@@ -316,6 +316,7 @@ function QualBtn({ active, onClick, children }) {
 }
 
 function SaveBtn({ url }) {
+  const { t } = useTranslation()
   const [saved, setSaved] = useState(false)
 
   async function handle() {
@@ -327,7 +328,7 @@ function SaveBtn({ url }) {
       className={`px-4 py-2 rounded-lg text-[13.5px] border transition-all ${
         saved ? 'border-success/40 text-success bg-success/10' : 'border-white/10 text-text-secondary bg-bg-hover hover:border-white/20'
       }`}>
-      {saved ? <><i className="ti ti-check mr-1" /> Сохранено</> : t('home.saveLink')}
+      {saved ? <><i className="ti ti-check mr-1" /> {t('common.saved')}</> : t('home.saveLink')}
     </button>
   )
 }

@@ -3,14 +3,16 @@ VDL — SQLite база данных через SQLAlchemy
 Таблицы: downloads (история), saved_links (закладки)
 """
 import os
+import sys
 from datetime import datetime
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, Text
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-# Абсолютный путь к базе: всегда корень проекта (на уровень выше папки database),
-# независимо от того, из какой рабочей папки запущен Python.
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DB_PATH = os.path.join(PROJECT_ROOT, 'vdl.db')
+# Папка данных: рядом с exe (в сборке) или корень проекта (обычный запуск).
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from paths import get_app_dir
+
+DB_PATH = os.path.join(get_app_dir(), 'vdl.db')
 print(f'[DB] База данных: {DB_PATH}')
 engine = create_engine(f'sqlite:///{DB_PATH}', echo=False)
 SessionLocal = sessionmaker(bind=engine)

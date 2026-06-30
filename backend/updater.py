@@ -17,7 +17,8 @@ def get_installed_version() -> str:
     try:
         result = subprocess.run(
             [sys.executable, '-m', 'yt_dlp', '--version'],
-            capture_output=True, text=True, timeout=10
+            capture_output=True, text=True, timeout=10,
+            encoding='utf-8', errors='replace'
         )
         return result.stdout.strip()
     except Exception:
@@ -93,7 +94,8 @@ def update_ytdlp() -> dict:
     try:
         result = subprocess.run(
             [sys.executable, '-m', 'pip', 'install', '--upgrade', 'yt-dlp'],
-            capture_output=True, text=True, timeout=120
+            capture_output=True, text=True, timeout=120,
+            encoding='utf-8', errors='replace'
         )
         if result.returncode == 0:
             new_version = get_installed_version()

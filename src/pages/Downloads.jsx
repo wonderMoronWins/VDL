@@ -74,7 +74,7 @@ export default function Downloads() {
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
                 <span className="text-success text-[12px] flex items-center gap-1">
-                  <i className="ti ti-circle-check text-[14px]" aria-hidden="true" /> Готово
+                  <i className="ti ti-circle-check text-[14px]" aria-hidden="true" /> {t('common.ready')}
                 </span>
                 <button
                   onClick={() => openInFolder(item.file_path)}

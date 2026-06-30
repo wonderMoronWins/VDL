@@ -11,12 +11,25 @@ import uuid
 from contextlib import asynccontextmanager
 from datetime import datetime
 
+# Форсируем UTF-8 — иначе на Windows кириллица в путях к папкам
+# ломается (cp1251), и видео не сохраняется в папки с русскими именами.
+os.environ['PYTHONUTF8'] = '1'
+os.environ['PYTHONIOENCODING'] = 'utf-8'
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
 # Абсолютные пути — не зависят от рабочей папки, из которой запущен backend.
 # Без этого settings.json и база читались/писались в разных местах.
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SETTINGS_PATH = os.path.join(PROJECT_ROOT, 'settings.json')
-
 sys.path.insert(0, PROJECT_ROOT)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# Папка данных: рядом с exe (в сборке) или корень проекта (обычный запуск).
+from paths import get_app_dir
+SETTINGS_PATH = os.path.join(get_app_dir(), 'settings.json')
 
 from fastapi import FastAPI, BackgroundTasks, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -329,7 +342,7 @@ def get_settings():
         'auto_check_updates': True,
     }
     if os.path.exists(settings_path):
-        with open(settings_path, 'r') as f:
+        with open(settings_path, 'r', encoding='utf-8') as f:
             saved = json.load(f)
         defaults.update(saved)
     return defaults

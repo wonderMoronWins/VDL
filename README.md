@@ -34,7 +34,7 @@
 
 ## English
 
-A clean, dark-themed desktop video downloader. Paste a link, pick quality and format, download. Built-in converter, download history, saved links and a one-click yt-dlp updater.
+A clean, dark-themed desktop video downloader. Paste a link, pick quality and format, download. Built-in converter, download history and saved links.
 
 ### Features
 
@@ -45,7 +45,6 @@ A clean, dark-themed desktop video downloader. Paste a link, pick quality and fo
 - **Converter** — convert video formats (MP4, WebM, MKV, AVI, MOV) or extract audio (MP3, AAC, FLAC, WAV, OGG) via FFmpeg
 - **Smart folder handling** — if the download folder is missing, the app offers to pick a new one before starting
 - **Completion sound + Windows notification** when a download finishes
-- **Built-in yt-dlp updater** — sites change their protection often, update the engine in one click
 - **Dark theme** with purple accents
 
 ### Tech stack
@@ -95,7 +94,7 @@ Released under the [MIT License](LICENSE).
 
 ## Русский
 
-Аккуратный видеозагрузчик в тёмной теме. Вставьте ссылку, выберите качество и формат, скачайте. Встроенный конвертер, история загрузок, сохранённые ссылки и обновление yt-dlp в один клик.
+Аккуратный видеозагрузчик в тёмной теме. Вставьте ссылку, выберите качество и формат, скачайте. Встроенный конвертер, история загрузок и сохранённые ссылки.
 
 ### Возможности
 
@@ -106,7 +105,6 @@ Released under the [MIT License](LICENSE).
 - **Конвертер** — смена формата видео (MP4, WebM, MKV, AVI, MOV) или извлечение аудио (MP3, AAC, FLAC, WAV, OGG) через FFmpeg
 - **Умная обработка папок** — если папка загрузок удалена, приложение предложит выбрать новую перед стартом
 - **Звук + уведомление Windows** при завершении загрузки
-- **Встроенное обновление yt-dlp** — сайты часто меняют защиту, обновляйте движок в один клик
 - **Тёмная тема** с фиолетовыми акцентами
 
 ### Технологии
@@ -145,10 +143,6 @@ npm run dev
 ```
 
 Python-бэкенд запускается автоматически вместе с приложением.
-## Authors / Авторы
-
-- [@wonderMoronWins](https://github.com/wonderMoronWins) — author / автор
-- [@urpok268](https://github.com/urpok268) — contributor / участник
 
 ### Лицензия
 

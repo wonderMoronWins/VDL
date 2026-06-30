@@ -32,12 +32,22 @@
     "appId": "com.vdl.app",
     "productName": "VDL",
     "directories": { "output": "dist-electron" },
-    "files": ["dist/**/*", "electron/**/*", "backend/**/*"],
+    "files": ["dist/**/*", "electron/**/*"],
     "extraResources": [
-      { "from": "backend", "to": "backend" }
+      { "from": "backend-build/backend.exe", "to": "backend-dist/backend.exe" }
     ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "VDL"
+    },
     "mac": { "category": "public.app-category.utilities" },
-    "win": { "target": "nsis" },
     "linux": { "target": "AppImage" }
   }
 }

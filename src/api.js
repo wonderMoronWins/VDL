@@ -3,18 +3,40 @@
  */
 const BASE = 'http://127.0.0.1:8765'
 
+// Флаг: backend уже поднялся хотя бы раз (чтобы долго ждать только на старте)
+let backendReady = false
+
 async function req(method, path, body = null) {
   const opts = {
     method,
     headers: { 'Content-Type': 'application/json' },
   }
   if (body) opts.body = JSON.stringify(body)
-  const res = await fetch(BASE + path, opts)
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: res.statusText }))
-    throw new Error(err.detail || 'Ошибка сервера')
+
+  // На старте backend.exe распаковывается несколько секунд (внутри FFmpeg).
+  // Поэтому при ошибке соединения повторяем запрос, пока backend не поднимется.
+  const maxAttempts = backendReady ? 1 : 40   // ~40 попыток × 750мс ≈ 30 сек на старте
+  let lastErr = null
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      const res = await fetch(BASE + path, opts)
+      backendReady = true
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ detail: res.statusText }))
+        throw new Error(err.detail || 'Ошибка сервера')
+      }
+      return res.json()
+    } catch (e) {
+      lastErr = e
+      // Ошибка "сервер ещё не поднялся" — ждём и пробуем снова.
+      // Прочие ошибки (после готовности backend) пробрасываем сразу.
+      const isConnRefused = e instanceof TypeError  // fetch fail = backend недоступен
+      if (!isConnRefused || backendReady) throw e
+      await new Promise(r => setTimeout(r, 750))
+    }
   }
-  return res.json()
+  throw lastErr || new Error('Backend недоступен')
 }
 
 // ─── Анализ URL ──────────────────────────────────────────────────────────────

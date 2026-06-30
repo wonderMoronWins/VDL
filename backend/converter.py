@@ -5,14 +5,18 @@ VDL — Converter модуль
 """
 import os
 import re
+import sys
 import subprocess
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from paths import get_ffmpeg, get_ffprobe
 
 
 def get_duration_seconds(file_path: str) -> float:
     """Получаем длительность файла через ffprobe"""
     try:
         result = subprocess.run(
-            ['ffprobe', '-v', 'error', '-show_entries', 'format=duration',
+            [get_ffprobe(), '-v', 'error', '-show_entries', 'format=duration',
              '-of', 'default=noprint_wrappers=1:nokey=1', file_path],
             capture_output=True, text=True, timeout=15
         )
@@ -46,7 +50,7 @@ def convert_file(
     duration = get_duration_seconds(input_path)
 
     # Строим команду FFmpeg
-    cmd = ['ffmpeg', '-y', '-i', input_path]
+    cmd = [get_ffmpeg(), '-y', '-i', input_path]
 
     if mode == 'audio':
         fmt = output_format.lower()

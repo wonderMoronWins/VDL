@@ -35,18 +35,32 @@ function resolvePythonPath() {
   return process.platform === 'win32' ? 'python' : 'python3'
 }
 
-// ─── Запуск Python backend ───────────────────────────────────────────────────
+// ─── Запуск backend ───────────────────────────────────────────────────
+// В собранном приложении: backend.exe (Python внутри не нужен).
+// В разработке: python из venv + backend/main.py.
 function startPythonBackend() {
-  const backendPath = isDev
-    ? path.join(__dirname, '..', 'backend', 'main.py')
-    : path.join(process.resourcesPath, 'backend', 'main.py')
+  if (!isDev) {
+    // Production: запускаем вложенный backend.exe из resources
+    const exeName = process.platform === 'win32' ? 'backend.exe' : 'backend'
+    const backendExe = path.join(process.resourcesPath, 'backend-dist', exeName)
+    console.log('[Backend] запуск exe:', backendExe)
+    pythonProcess = spawn(backendExe, [], {
+      stdio: ['ignore', 'pipe', 'pipe'],
+      cwd: path.dirname(backendExe),
+      env: { ...process.env, PYTHONUTF8: '1', PYTHONIOENCODING: 'utf-8' },
+    })
+  } else {
+    // Development: python из venv
+    const backendPath = path.join(__dirname, '..', 'backend', 'main.py')
+    const pythonExe = resolvePythonPath()
+    pythonProcess = spawn(pythonExe, [backendPath], {
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: { ...process.env, PYTHONUTF8: '1', PYTHONIOENCODING: 'utf-8' },
+    })
+  }
 
-  const pythonExe = resolvePythonPath()
-
-  pythonProcess = spawn(pythonExe, [backendPath], {
-    stdio: ['ignore', 'pipe', 'pipe'],
-  })
-
+  pythonProcess.stdout.setEncoding('utf8')
+  pythonProcess.stderr.setEncoding('utf8')
   pythonProcess.stdout.on('data', (data) => {
     console.log('[Python]', data.toString().trim())
   })
@@ -137,8 +151,9 @@ ipcMain.handle('shell:showItemInFolder', (_, filePath) => {
 // ─── App lifecycle ────────────────────────────────────────────────────────────
 app.whenReady().then(() => {
   startPythonBackend()
-  // Даём Python секунду на старт, затем открываем окно
-  setTimeout(createWindow, 1000)
+  // Backend.exe распаковывается несколько секунд (внутри FFmpeg),
+  // поэтому даём фору перед окном. Дальше API сам повторяет запросы.
+  setTimeout(createWindow, isDev ? 1000 : 2500)
 })
 
 // Надёжно завершает Python и все его дочерние процессы (FFmpeg и т.д.)

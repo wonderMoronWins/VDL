@@ -169,7 +169,7 @@ export default function Converter() {
           </div>
           <div className="flex-1">
             <div className="text-text-muted text-[11px] mb-1.5">
-              {mode === 'audio' ? 'Формат аудио' : 'Целевой формат'}
+              {mode === 'audio' ? t('converter.audioFormat') : t('converter.targetFormat')}
             </div>
             <select
               value={outputFmt}
@@ -202,7 +202,7 @@ export default function Converter() {
               {task.status === 'done' ? (
                 <div className="flex items-center gap-2">
                   <span className="text-success text-[12px] flex items-center gap-1">
-                    <i className="ti ti-circle-check" aria-hidden="true" /> Конвертация завершена
+                    <i className="ti ti-circle-check" aria-hidden="true" /> {t('converter.done')}
                   </span>
                   {task.output_path && (
                     <button
